@@ -1,9 +1,6 @@
 ## Demo
 
-<video width="600" controls>
-  <source src="./download-youtube-video.mp4" type="video/mp4">
-  你的瀏覽器不支持影片播放。
-</video>
+<img src="./example.gif" width="600" alt="Example GIF">
 
 ## 簡介
 
