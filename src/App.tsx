@@ -1,12 +1,37 @@
-import React, { useState } from 'react';
+import  { useState } from 'react';
 import UrlInput from './components/UrlInput';
 import DownloadButton from './components/DownloadButton';
+import { v4 as uuidv4 } from 'uuid';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   const [url, setUrl] = useState('');
 
-  const handleDownload = () => {
-    console.log('模擬下載:', url);
+  const handleDownload = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/download', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ url }),
+      });
+      
+      if (!response.ok) {
+        toast.error("下載失敗，請稍後再試");
+        return;
+      }
+
+      // 下載成功，處理下載
+      const blob = await response.blob();
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `${uuidv4()}.mp4`;
+      link.click();
+    } catch (error) {
+      toast.error("下載失敗，請稍後再試");
+    }
   };
 
   return (
@@ -23,15 +48,21 @@ function App() {
 
         <div className="bg-white rounded-xl shadow-lg p-6 md:p-8">
           <div className="space-y-6">
+            {/* 影片輸入 */}
             <UrlInput url={url} setUrl={setUrl} />
+
+            {/* Toast 容器 */}
+            <ToastContainer position="top-center" autoClose={3000} />
             
             <div className="flex justify-center">
+              {/* 影片下載 */}
               <DownloadButton 
                 onDownload={handleDownload}
                 disabled={!url.trim().includes('youtube.com')}
               />
             </div>
 
+            {/* 使用說明 */}
             <div className="mt-6 border-t border-gray-200 pt-6">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">使用說明</h2>
               <ul className="space-y-2 text-gray-600">
